@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { BrowserRouter } from 'react-router-dom';
+import useLocalStorage from './hooks/useLocalStorage';
 
 const exampleTodos = [
   { name: 'Fische füttern', description: 'Dringend!' },
@@ -8,21 +9,17 @@ const exampleTodos = [
 ];
 
 function App(): JSX.Element {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useLocalStorage<
+    { name: string; description: string }[]
+  >('todos', exampleTodos);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-
-  useEffect(() => {
-    const localStorageTodos = JSON.parse(localStorage.getItem('todos')) || [];
-    setTodos(localStorageTodos);
-  }, []);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const newTodo = { name, description };
     const newTodos = [...todos, newTodo];
     setTodos(newTodos);
-    localStorage.setItem('todos', JSON.stringify(newTodos));
   }
 
   return (
