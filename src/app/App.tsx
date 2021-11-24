@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { BrowserRouter } from 'react-router-dom';
 
@@ -8,14 +8,21 @@ const exampleTodos = [
 ];
 
 function App(): JSX.Element {
-  const [todos, setTodos] = useState(exampleTodos);
+  const [todos, setTodos] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    const localStorageTodos = JSON.parse(localStorage.getItem('todos')) || [];
+    setTodos(localStorageTodos);
+  }, []);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const newTodo = { name, description };
-    setTodos([...todos, newTodo]);
+    const newTodos = [...todos, newTodo];
+    setTodos(newTodos);
+    localStorage.setItem('todos', JSON.stringify(newTodos));
   }
 
   return (
@@ -36,12 +43,13 @@ function App(): JSX.Element {
         />
         <input type="submit" />
       </form>
-      {todos.map((todo) => (
-        <div>
-          <h3>{todo.name}</h3>
-          <p>{todo.description}</p>
-        </div>
-      ))}
+      {todos &&
+        todos.map((todo) => (
+          <div>
+            <h3>{todo.name}</h3>
+            <p>{todo.description}</p>
+          </div>
+        ))}
     </BrowserRouter>
   );
 }
